@@ -1,19 +1,18 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getSession } from "@/lib/auth/session";
 import { getMpPreApproval } from "@/lib/mercadopago";
 
 export async function POST() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user?.email) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  const session = await getSession();
+  if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
   const preapproval = await getMpPreApproval().create({
     body: {
       reason: "Suscripción mensual Terra Araras",
-      external_reference: user.id,
-      payer_email: user.email,
+      external_reference: session.userId,
+      payer_email: session.email,
       back_url: `${siteUrl}/dashboard?suscripcion=ok`,
       status: "pending",
       auto_recurring: {

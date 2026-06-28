@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { sql } from "@/lib/db";
 import type { ContentItem } from "@/lib/types";
 import ContentForm from "@/components/admin/ContentForm";
+
+export const dynamic = "force-dynamic";
 
 export default async function EditContentPage({
   params,
@@ -9,13 +11,8 @@ export default async function EditContentPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const supabase = await createClient();
 
-  const { data: item } = await supabase
-    .from("content_items")
-    .select("*")
-    .eq("id", id)
-    .single<ContentItem>();
+  const [item] = (await sql`select * from content_items where id = ${id}`) as ContentItem[];
 
   if (!item) notFound();
 

@@ -1,23 +1,14 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import type { Profile } from "@/lib/types";
+import { getSession } from "@/lib/auth/session";
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) redirect("/login");
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single<Profile>();
+  const session = await getSession();
+  if (!session) redirect("/login");
 
   return (
     <div className="min-h-screen bg-terra-sand">
@@ -32,7 +23,7 @@ export default async function DashboardLayout({
           <Link href="/dashboard/intake" className="hover:underline">
             Hablar con el agente
           </Link>
-          {profile?.role === "admin" && (
+          {session.role === "admin" && (
             <Link href="/admin" className="hover:underline">
               Admin
             </Link>

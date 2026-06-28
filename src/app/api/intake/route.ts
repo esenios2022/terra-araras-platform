@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getSession } from "@/lib/auth/session";
+import { sql } from "@/lib/db";
 import { getAnthropic, INTAKE_MODEL, INTAKE_SYSTEM_PROMPT } from "@/lib/anthropic";
 import type { IntakeMessage } from "@/lib/types";
 
@@ -10,30 +11,23 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Falta el mensaje" }, { status: 400 });
   }
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  const session = await getSession();
+  if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
   let currentSessionId = sessionId as string | undefined;
   let history: IntakeMessage[] = [];
 
   if (currentSessionId) {
-    const { data: existing } = await supabase
-      .from("intake_sessions")
-      .select("messages")
-      .eq("id", currentSessionId)
-      .eq("user_id", user.id)
-      .single();
+    const [existing] = await sql`
+      select messages from intake_sessions
+      where id = ${currentSessionId} and user_id = ${session.userId}
+    `;
     history = (existing?.messages as IntakeMessage[]) ?? [];
   } else {
-    const { data: created, error } = await supabase
-      .from("intake_sessions")
-      .insert({ user_id: user.id, messages: [] })
-      .select("id")
-      .single();
-    if (error || !created) {
-      return NextResponse.json({ error: "No se pudo crear la sesión" }, { status: 500 });
-    }
+    const [created] = await sql`
+      insert into intake_sessions (user_id, messages) values (${session.userId}, '[]'::jsonb)
+      returning id
+    `;
     currentSessionId = created.id;
   }
 
@@ -57,11 +51,10 @@ export async function POST(request: NextRequest) {
     { role: "assistant", content: assistantText },
   ];
 
-  await supabase
-    .from("intake_sessions")
-    .update({ messages: finalHistory })
-    .eq("id", currentSessionId)
-    .eq("user_id", user.id);
+  await sql`
+    update intake_sessions set messages = ${JSON.stringify(finalHistory)}::jsonb
+    where id = ${currentSessionId} and user_id = ${session.userId}
+  `;
 
   return NextResponse.json({ sessionId: currentSessionId, reply: assistantText });
 }

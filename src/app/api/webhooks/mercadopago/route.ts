@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getMpPreApproval } from "@/lib/mercadopago";
-import { createServiceRoleClient } from "@/lib/supabase/server";
+import { sql } from "@/lib/db";
 
 function mapStatus(status: string): string {
   if (status === "authorized") return "active";
@@ -22,19 +22,15 @@ export async function POST(request: NextRequest) {
   if (!userId) return NextResponse.json({ received: true });
 
   const status = mapStatus(preapproval.status ?? "");
-  const supabase = createServiceRoleClient();
 
-  await supabase.from("subscriptions").upsert(
-    {
-      user_id: userId,
-      provider: "mercadopago",
-      provider_subscription_id: preapproval.id,
-      status,
-    },
-    { onConflict: "provider_subscription_id" }
-  );
+  await sql`
+    insert into subscriptions (user_id, provider, provider_subscription_id, status)
+    values (${userId}, 'mercadopago', ${preapproval.id}, ${status})
+    on conflict (provider_subscription_id)
+    do update set status = ${status}, updated_at = now()
+  `;
 
-  await supabase.from("profiles").update({ subscription_status: status }).eq("id", userId);
+  await sql`update users set subscription_status = ${status} where id = ${userId}`;
 
   return NextResponse.json({ received: true });
 }

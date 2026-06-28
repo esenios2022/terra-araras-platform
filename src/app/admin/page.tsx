@@ -1,24 +1,20 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
-import type { ContentItem, Profile } from "@/lib/types";
+import { sql } from "@/lib/db";
+import type { ContentItem, User } from "@/lib/types";
 import DeleteContentButton from "@/components/admin/DeleteContentButton";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminPage() {
-  const supabase = await createClient();
+  const items = (await sql`
+    select * from content_items order by sort_order asc
+  `) as ContentItem[];
 
-  const { data: items } = await supabase
-    .from("content_items")
-    .select("*")
-    .order("sort_order", { ascending: true })
-    .returns<ContentItem[]>();
+  const subscribers = (await sql`
+    select * from users order by created_at desc
+  `) as User[];
 
-  const { data: subscribers } = await supabase
-    .from("profiles")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .returns<Profile[]>();
-
-  const activeCount = subscribers?.filter((s) => s.subscription_status === "active").length ?? 0;
+  const activeCount = subscribers.filter((s) => s.subscription_status === "active").length;
 
   return (
     <div className="space-y-10">
@@ -45,7 +41,7 @@ export default async function AdminPage() {
               </tr>
             </thead>
             <tbody>
-              {items?.map((item) => (
+              {items.map((item) => (
                 <tr key={item.id} className="border-t border-terra/10">
                   <td className="px-4 py-2">{item.title}</td>
                   <td className="px-4 py-2">{item.type}</td>
@@ -64,7 +60,7 @@ export default async function AdminPage() {
                   </td>
                 </tr>
               ))}
-              {(!items || items.length === 0) && (
+              {items.length === 0 && (
                 <tr>
                   <td colSpan={5} className="px-4 py-6 text-center text-terra-dark/60">
                     Todavía no agregaste contenido.
@@ -78,7 +74,7 @@ export default async function AdminPage() {
 
       <section>
         <h2 className="text-xl font-bold text-terra-dark">
-          Suscriptores ({activeCount} activos de {subscribers?.length ?? 0})
+          Suscriptores ({activeCount} activos de {subscribers.length})
         </h2>
         <div className="mt-4 overflow-hidden rounded-2xl bg-white/70">
           <table className="w-full text-left text-sm">
@@ -91,7 +87,7 @@ export default async function AdminPage() {
               </tr>
             </thead>
             <tbody>
-              {subscribers?.map((s) => (
+              {subscribers.map((s) => (
                 <tr key={s.id} className="border-t border-terra/10">
                   <td className="px-4 py-2">{s.full_name ?? "—"}</td>
                   <td className="px-4 py-2">{s.email}</td>

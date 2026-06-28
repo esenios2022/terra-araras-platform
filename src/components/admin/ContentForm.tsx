@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import type { ContentItem, ContentType } from "@/lib/types";
 
 export default function ContentForm({ initial }: { initial?: ContentItem }) {
@@ -26,17 +25,19 @@ export default function ContentForm({ initial }: { initial?: ContentItem }) {
     setSaving(true);
     setError(null);
 
-    const supabase = createClient();
     let audioPath = initial?.audio_path ?? null;
 
     try {
       if (type === "audio" && audioFile) {
-        const path = `${Date.now()}-${audioFile.name}`;
-        const { error: uploadError } = await supabase.storage
-          .from("audio")
-          .upload(path, audioFile, { upsert: false });
-        if (uploadError) throw uploadError;
-        audioPath = path;
+        const uploadData = new FormData();
+        uploadData.set("file", audioFile);
+        const uploadRes = await fetch("/api/admin/upload-audio", {
+          method: "POST",
+          body: uploadData,
+        });
+        const uploadJson = await uploadRes.json();
+        if (!uploadRes.ok) throw new Error(uploadJson.error || "No se pudo subir el audio.");
+        audioPath = uploadJson.path;
       }
 
       const payload = {
@@ -51,16 +52,13 @@ export default function ContentForm({ initial }: { initial?: ContentItem }) {
         sort_order: Number(sortOrder) || 0,
       };
 
-      if (initial) {
-        const { error: updateError } = await supabase
-          .from("content_items")
-          .update(payload)
-          .eq("id", initial.id);
-        if (updateError) throw updateError;
-      } else {
-        const { error: insertError } = await supabase.from("content_items").insert(payload);
-        if (insertError) throw insertError;
-      }
+      const res = await fetch(initial ? `/api/admin/content/${initial.id}` : "/api/admin/content", {
+        method: initial ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "No se pudo guardar.");
 
       router.push("/admin");
       router.refresh();

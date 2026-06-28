@@ -4,32 +4,35 @@ Plataforma de meditaciones y limpiezas energéticas guiadas en video y audio, co
 suscripción mensual. Antes de entrar a la biblioteca, un agente de IA conversa
 brevemente con cada persona para entender qué la trae.
 
-Stack: Next.js (App Router) + Supabase (Auth/DB/Storage) + Vimeo (video privado) +
-Claude (agente de intake) + Stripe y Mercado Pago (suscripciones). Pensado para
-desplegar en Vercel.
+Stack: Next.js (App Router) + Neon (Postgres) + login propio (cookies firmadas) +
+Cloudflare R2 (audios privados) + Vimeo (video privado) + Claude (agente de
+intake) + Stripe y Mercado Pago (suscripciones). Pensado para desplegar en
+Vercel.
 
 ## Puesta en marcha
 
-### 1. Supabase
+### 1. Neon (base de datos)
 
-1. Creá un proyecto en [supabase.com](https://supabase.com).
-2. En **SQL Editor**, ejecutá el contenido de `supabase/migrations/0001_init.sql`.
-   Esto crea las tablas (`profiles`, `content_items`, `intake_sessions`,
-   `subscriptions`), las políticas de RLS y el bucket privado `audio`.
-3. En **Project Settings → API**, copiá `Project URL`, `anon public key` y
-   `service_role key`.
+1. Creá una cuenta y un proyecto en [neon.tech](https://neon.tech) (plan free).
+2. En el **SQL Editor** del proyecto, ejecutá el contenido de
+   [db/schema.sql](db/schema.sql). Esto crea las tablas `users`,
+   `content_items`, `intake_sessions` y `subscriptions`.
+3. Copiá el **Connection string** (pooled connection) — es el valor de
+   `DATABASE_URL`.
 4. Para convertir tu propio usuario en admin: registrate normalmente desde
    `/signup` y después, en el SQL Editor, corré:
    ```sql
-   update public.profiles set role = 'admin' where email = 'tu-email@ejemplo.com';
+   update users set role = 'admin' where email = 'tu-email@ejemplo.com';
    ```
 
 ### 2. Variables de entorno
 
 Copiá `.env.example` a `.env.local` y completá:
 
-- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
-  `SUPABASE_SERVICE_ROLE_KEY` → de Supabase.
+- `DATABASE_URL` → connection string de Neon.
+- `SESSION_SECRET` → una cadena larga y aleatoria (ej: `openssl rand -hex 32`).
+- `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`
+  → de tu cuenta de Cloudflare (ver paso 4).
 - `ANTHROPIC_API_KEY` → para el agente de intake conversacional.
 - `VIMEO_ACCESS_TOKEN` → de tu cuenta Vimeo Pro/Business.
 - `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
@@ -49,11 +52,18 @@ Importante: no existe protección 100% infalible contra grabación de pantalla.
 Esta configuración evita la descarga y el reuso del link fuera del dominio, que
 es lo que cubre la gran mayoría de los casos.
 
-### 4. Audios
+### 4. Audios (Cloudflare R2)
 
-Se suben directo desde `/admin/content/new` (tipo "Audio"): el archivo va a un
-bucket privado de Supabase Storage y se reproduce con una URL firmada que vence
-en 60 segundos, generada en cada reproducción.
+1. Creá una cuenta gratis en [cloudflare.com](https://cloudflare.com).
+2. En el dashboard, entrá a **R2 Object Storage** → "Create bucket" (nombre
+   libre, ej: `terra-araras-audio`). El free tier incluye 10 GB de
+   almacenamiento sin costo de salida.
+3. En **R2 → Manage API tokens**, creá un token con permiso de
+   lectura/escritura sobre ese bucket. Te da `Account ID`, `Access Key ID` y
+   `Secret Access Key`.
+4. Los audios se suben directo desde `/admin/content/new` (tipo "Audio") y se
+   reproducen con una URL firmada que vence en 60 segundos, generada en cada
+   reproducción.
 
 ### 5. Pagos
 
@@ -83,3 +93,11 @@ npm run dev
   estado de pago.
 - **admin**: además accede a `/admin` para subir/editar/publicar contenido y
   ver el listado de suscriptores. Se asigna manualmente en la base (ver paso 1).
+
+## Seguridad de la sesión
+
+El login es propio: las contraseñas se guardan con hash (bcrypt) y la sesión
+viaja en una cookie firmada (JWT, `SESSION_SECRET`) con httpOnly + secure en
+producción. No hay recuperación de contraseña por email todavía — si la
+agregás más adelante, vas a necesitar un proveedor de envío de emails (ej.
+Resend).

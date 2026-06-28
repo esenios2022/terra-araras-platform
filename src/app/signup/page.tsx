@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
 
 export default function SignupPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -17,34 +17,22 @@ export default function SignupPage() {
     setLoading(true);
     setError(null);
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { full_name: fullName } },
+    const res = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, fullName }),
     });
+    const data = await res.json();
 
     setLoading(false);
 
-    if (error) {
-      setError(error.message);
+    if (!res.ok) {
+      setError(data.error || "No se pudo crear la cuenta.");
       return;
     }
 
-    setDone(true);
-  }
-
-  if (done) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-terra-sand px-6 text-center">
-        <div>
-          <h1 className="text-2xl font-bold text-terra-dark">Revisá tu email</h1>
-          <p className="mt-2 text-terra-dark/80">
-            Te enviamos un link de confirmación para activar tu cuenta.
-          </p>
-        </div>
-      </main>
-    );
+    router.push("/dashboard");
+    router.refresh();
   }
 
   return (

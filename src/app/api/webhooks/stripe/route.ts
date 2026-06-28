@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
-import { createServiceRoleClient } from "@/lib/supabase/server";
+import { sql } from "@/lib/db";
 
 function mapStatus(status: Stripe.Subscription.Status): string {
   if (status === "active" || status === "trialing") return "active";
@@ -24,49 +24,41 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Firma inválida" }, { status: 400 });
   }
 
-  const supabase = createServiceRoleClient();
-
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const userId = session.client_reference_id;
     if (userId) {
-      await supabase.from("subscriptions").upsert(
-        {
-          user_id: userId,
-          provider: "stripe",
-          provider_customer_id: session.customer as string,
-          provider_subscription_id: session.subscription as string,
-          status: "active",
-        },
-        { onConflict: "provider_subscription_id" }
-      );
-      await supabase
-        .from("profiles")
-        .update({ subscription_status: "active" })
-        .eq("id", userId);
+      await sql`
+        insert into subscriptions (user_id, provider, provider_customer_id, provider_subscription_id, status)
+        values (${userId}, 'stripe', ${session.customer as string}, ${session.subscription as string}, 'active')
+        on conflict (provider_subscription_id)
+        do update set status = 'active', updated_at = now()
+      `;
+      await sql`update users set subscription_status = 'active' where id = ${userId}`;
     }
   }
 
-  if (event.type === "customer.subscription.updated" || event.type === "customer.subscription.deleted") {
+  if (
+    event.type === "customer.subscription.updated" ||
+    event.type === "customer.subscription.deleted"
+  ) {
     const subscription = event.data.object as Stripe.Subscription;
     const status = mapStatus(subscription.status);
 
-    const { data: existing } = await supabase
-      .from("subscriptions")
-      .select("user_id")
-      .eq("provider_subscription_id", subscription.id)
-      .single();
+    const [existing] = await sql`
+      select user_id from subscriptions where provider_subscription_id = ${subscription.id}
+    `;
 
-    await supabase
-      .from("subscriptions")
-      .update({ status, current_period_end: new Date(subscription.current_period_end * 1000).toISOString() })
-      .eq("provider_subscription_id", subscription.id);
+    await sql`
+      update subscriptions set
+        status = ${status},
+        current_period_end = ${new Date(subscription.current_period_end * 1000).toISOString()},
+        updated_at = now()
+      where provider_subscription_id = ${subscription.id}
+    `;
 
     if (existing?.user_id) {
-      await supabase
-        .from("profiles")
-        .update({ subscription_status: status })
-        .eq("id", existing.user_id);
+      await sql`update users set subscription_status = ${status} where id = ${existing.user_id}`;
     }
   }
 

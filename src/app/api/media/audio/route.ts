@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
+import { getSession } from "@/lib/auth/session";
+import { sql } from "@/lib/db";
+import { getSignedAudioUrl } from "@/lib/storage/r2";
 
 export async function GET(request: NextRequest) {
   const contentId = request.nextUrl.searchParams.get("contentId");
@@ -7,39 +9,30 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Falta contentId" }, { status: 400 });
   }
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  const session = await getSession();
+  if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role, subscription_status")
-    .eq("id", user.id)
-    .single();
+  const [user] = await sql`
+    select role, subscription_status from users where id = ${session.userId}
+  `;
 
-  const hasAccess = profile?.role === "admin" || profile?.subscription_status === "active";
+  const hasAccess = user?.role === "admin" || user?.subscription_status === "active";
   if (!hasAccess) {
     return NextResponse.json({ error: "Suscripción inactiva" }, { status: 403 });
   }
 
-  const { data: content } = await supabase
-    .from("content_items")
-    .select("audio_path, type, is_published")
-    .eq("id", contentId)
-    .single();
+  const [content] = await sql`
+    select audio_path, type from content_items where id = ${contentId}
+  `;
 
   if (!content || content.type !== "audio" || !content.audio_path) {
     return NextResponse.json({ error: "No encontrado" }, { status: 404 });
   }
 
-  const service = createServiceRoleClient();
-  const { data: signed, error } = await service.storage
-    .from("audio")
-    .createSignedUrl(content.audio_path, 60);
-
-  if (error || !signed) {
+  try {
+    const url = await getSignedAudioUrl(content.audio_path, 60);
+    return NextResponse.json({ url });
+  } catch {
     return NextResponse.json({ error: "No se pudo generar el link" }, { status: 500 });
   }
-
-  return NextResponse.json({ url: signed.signedUrl });
 }

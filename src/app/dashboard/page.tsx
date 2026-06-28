@@ -1,19 +1,19 @@
-import { createClient } from "@/lib/supabase/server";
-import type { ContentItem, Profile } from "@/lib/types";
-import SubscribeButtons from "@/components/SubscribeButtons";
 import Link from "next/link";
+import { getSession } from "@/lib/auth/session";
+import { sql } from "@/lib/db";
+import type { ContentItem } from "@/lib/types";
+import SubscribeButtons from "@/components/SubscribeButtons";
+
+export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const session = await getSession();
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user!.id)
-    .single<Profile>();
+  const [user] = await sql`
+    select role, subscription_status from users where id = ${session!.userId}
+  `;
 
-  const isActive = profile?.role === "admin" || profile?.subscription_status === "active";
+  const isActive = user?.role === "admin" || user?.subscription_status === "active";
 
   if (!isActive) {
     return (
@@ -27,15 +27,12 @@ export default async function DashboardPage() {
     );
   }
 
-  const { data: items } = await supabase
-    .from("content_items")
-    .select("*")
-    .eq("is_published", true)
-    .order("sort_order", { ascending: true })
-    .returns<ContentItem[]>();
+  const items = (await sql`
+    select * from content_items where is_published = true order by sort_order asc
+  `) as ContentItem[];
 
-  const videos = items?.filter((i) => i.type === "video") ?? [];
-  const audios = items?.filter((i) => i.type === "audio") ?? [];
+  const videos = items.filter((i) => i.type === "video");
+  const audios = items.filter((i) => i.type === "audio");
 
   return (
     <div className="space-y-12">

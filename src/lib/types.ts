@@ -15,12 +15,13 @@ export interface ContentItem {
   created_at: string;
 }
 
-export interface Profile {
+export interface User {
   id: string;
   email: string;
   full_name: string | null;
   role: "user" | "admin";
   subscription_status: "inactive" | "active" | "past_due" | "canceled";
+  created_at: string;
 }
 
 export interface IntakeMessage {

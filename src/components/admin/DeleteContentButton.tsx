@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 
 export default function DeleteContentButton({ id }: { id: string }) {
   const router = useRouter();
@@ -11,8 +10,8 @@ export default function DeleteContentButton({ id }: { id: string }) {
   async function handleDelete() {
     if (!confirm("¿Borrar este contenido? No se puede deshacer.")) return;
     setLoading(true);
-    const supabase = createClient();
-    await supabase.from("content_items").delete().eq("id", id);
+    await fetch(`/api/admin/content/${id}`, { method: "DELETE" });
+    setLoading(false);
     router.refresh();
   }
 

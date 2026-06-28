@@ -1,8 +1,11 @@
-import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { notFound, redirect } from "next/navigation";
+import { getSession } from "@/lib/auth/session";
+import { sql } from "@/lib/db";
 import type { ContentItem } from "@/lib/types";
 import VideoPlayer from "@/components/VideoPlayer";
 import AudioPlayer from "@/components/AudioPlayer";
+
+export const dynamic = "force-dynamic";
 
 export default async function ContentDetailPage({
   params,
@@ -10,14 +13,18 @@ export default async function ContentDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const supabase = await createClient();
+  const session = await getSession();
+  if (!session) redirect("/login");
 
-  const { data: item } = await supabase
-    .from("content_items")
-    .select("*")
-    .eq("id", id)
-    .eq("is_published", true)
-    .single<ContentItem>();
+  const [user] = await sql`
+    select role, subscription_status from users where id = ${session.userId}
+  `;
+  const hasAccess = user?.role === "admin" || user?.subscription_status === "active";
+  if (!hasAccess) redirect("/dashboard");
+
+  const [item] = (await sql`
+    select * from content_items where id = ${id} and is_published = true
+  `) as ContentItem[];
 
   if (!item) notFound();
 
