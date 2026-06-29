@@ -45,17 +45,17 @@ export default async function DashboardPage() {
     <div className="space-y-12">
       <section>
         <h2 className="text-xl font-bold text-terra-dark">{t.dashboard.videos}</h2>
-        <ContentGrid items={videos} locale={locale} emptyText={t.dashboard.emptyContent} />
+        <VideoGrid items={videos} locale={locale} emptyText={t.dashboard.emptyContent} />
       </section>
       <section>
         <h2 className="text-xl font-bold text-terra-dark">{t.dashboard.audios}</h2>
-        <ContentGrid items={audios} locale={locale} emptyText={t.dashboard.emptyContent} />
+        <AudioList items={audios} locale={locale} emptyText={t.dashboard.emptyContent} />
       </section>
     </div>
   );
 }
 
-function ContentGrid({
+function VideoGrid({
   items,
   locale,
   emptyText,
@@ -71,22 +71,85 @@ function ContentGrid({
   return (
     <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((item) => {
+        const { title } = localizedContent(item, locale);
+        return (
+          <Link
+            key={item.id}
+            href={`/dashboard/content/${item.id}`}
+            className="group overflow-hidden rounded-2xl bg-white/70 shadow-sm hover:shadow-md"
+          >
+            <div className="relative aspect-video w-full overflow-hidden bg-terra-dark/10">
+              {item.thumbnail_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={item.thumbnail_url}
+                  alt={title}
+                  className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-terra-dark/30">
+                  ▶
+                </div>
+              )}
+              <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover:bg-black/20">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-terra opacity-0 transition-opacity group-hover:opacity-100">
+                  ▶
+                </span>
+              </div>
+            </div>
+            <div className="p-4">
+              <h3 className="font-semibold text-terra-dark">{title}</h3>
+              <p className="mt-1 text-xs uppercase tracking-wide text-terra-gold">
+                {item.category}
+              </p>
+              {item.duration_minutes && (
+                <p className="mt-1 text-xs text-terra-dark/50">{item.duration_minutes} min</p>
+              )}
+            </div>
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
+function AudioList({
+  items,
+  locale,
+  emptyText,
+}: {
+  items: ContentItem[];
+  locale: Locale;
+  emptyText: string;
+}) {
+  if (items.length === 0) {
+    return <p className="mt-3 text-sm text-terra-dark/60">{emptyText}</p>;
+  }
+
+  return (
+    <div className="mt-4 divide-y divide-terra/10 overflow-hidden rounded-2xl bg-white/70 shadow-sm">
+      {items.map((item) => {
         const { title, description } = localizedContent(item, locale);
         return (
           <Link
             key={item.id}
             href={`/dashboard/content/${item.id}`}
-            className="rounded-2xl bg-white/70 p-5 shadow-sm hover:shadow-md"
+            className="flex items-center gap-4 p-4 hover:bg-white/90"
           >
-            <h3 className="font-semibold text-terra-dark">{title}</h3>
-            <p className="mt-1 text-xs uppercase tracking-wide text-terra-gold">
-              {item.category}
-            </p>
-            {description && (
-              <p className="mt-2 text-sm text-terra-dark/70 line-clamp-2">{description}</p>
-            )}
+            <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-terra/10 text-terra">
+              ♪
+            </span>
+            <div className="min-w-0 flex-1">
+              <h3 className="truncate font-semibold text-terra-dark">{title}</h3>
+              <p className="text-xs uppercase tracking-wide text-terra-gold">{item.category}</p>
+              {description && (
+                <p className="mt-1 truncate text-sm text-terra-dark/60">{description}</p>
+              )}
+            </div>
             {item.duration_minutes && (
-              <p className="mt-3 text-xs text-terra-dark/50">{item.duration_minutes} min</p>
+              <span className="flex-none text-xs text-terra-dark/50">
+                {item.duration_minutes} min
+              </span>
             )}
           </Link>
         );

@@ -19,7 +19,7 @@ export default async function DashboardLayout({
   return (
     <div className="min-h-screen bg-terra-sand">
       <header className="flex items-center justify-between border-b border-terra/10 px-6 py-4 md:px-12">
-        <Link href="/dashboard" className="text-lg font-semibold text-terra-dark">
+        <Link href="/dashboard" className="font-serif text-2xl font-semibold tracking-wide text-terra-dark md:text-3xl">
           Terra Araras
         </Link>
         <nav className="flex items-center gap-4 text-sm">

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/session";
 import { sql } from "@/lib/db";
-import { extractVimeoId } from "@/lib/vimeo";
+import { extractVimeoId, fetchVimeoThumbnail } from "@/lib/vimeo";
 
 export async function POST(request: Request) {
   const admin = await requireAdmin();
@@ -23,12 +23,13 @@ export async function POST(request: Request) {
   } = body;
 
   const cleanVimeoId = vimeo_id ? extractVimeoId(vimeo_id) : null;
+  const thumbnailUrl = cleanVimeoId ? await fetchVimeoThumbnail(cleanVimeoId) : null;
 
   const [item] = await sql`
     insert into content_items
-      (title, description, title_pt, description_pt, type, category, duration_minutes, vimeo_id, audio_path, is_published, sort_order, created_by)
+      (title, description, title_pt, description_pt, type, category, duration_minutes, vimeo_id, audio_path, thumbnail_url, is_published, sort_order, created_by)
     values
-      (${title}, ${description}, ${title_pt}, ${description_pt}, ${type}, ${category}, ${duration_minutes}, ${cleanVimeoId}, ${audio_path}, ${is_published}, ${sort_order}, ${admin.userId})
+      (${title}, ${description}, ${title_pt}, ${description_pt}, ${type}, ${category}, ${duration_minutes}, ${cleanVimeoId}, ${audio_path}, ${thumbnailUrl}, ${is_published}, ${sort_order}, ${admin.userId})
     returning id
   `;
 
