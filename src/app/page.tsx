@@ -57,7 +57,7 @@ export default function LandingPage() {
           </Link>
           <Link
             href="/signup"
-            className="rounded-full bg-terra px-5 py-2 text-sm font-medium text-terra-sand hover:bg-terra-dark"
+            className="rounded-full bg-terra px-5 py-2 text-sm font-medium text-terra-sand hover:bg-terra-deep"
           >
             Crear cuenta
           </Link>
@@ -108,12 +108,12 @@ export default function LandingPage() {
           Acceso completo a la biblioteca de meditaciones y audios, sin límite de reproducciones.
         </p>
         <div className="mx-auto mt-8 grid max-w-2xl gap-6 md:grid-cols-2">
-          <div className="rounded-3xl bg-terra-dark p-8 text-center text-terra-sand">
+          <div className="rounded-3xl bg-terra-deep p-8 text-center text-terra-sand">
             <h3 className="text-lg font-semibold">Uruguay</h3>
             <p className="mt-4 text-4xl font-bold">$555</p>
             <p className="text-terra-sand/70">pesos uruguayos / mes</p>
           </div>
-          <div className="rounded-3xl bg-terra-dark p-8 text-center text-terra-sand">
+          <div className="rounded-3xl bg-terra-deep p-8 text-center text-terra-sand">
             <h3 className="text-lg font-semibold">Brasil</h3>
             <p className="mt-4 text-4xl font-bold">R$44</p>
             <p className="text-terra-sand/70">reales / mes</p>

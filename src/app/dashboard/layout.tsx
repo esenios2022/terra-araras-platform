@@ -32,7 +32,7 @@ export default async function DashboardLayout({
             </Link>
           )}
           <form action="/api/auth/signout" method="post">
-            <button className="rounded-full bg-terra px-4 py-1.5 text-terra-sand hover:bg-terra-dark">
+            <button className="rounded-full bg-terra px-4 py-1.5 text-terra-sand hover:bg-terra-deep">
               Salir
             </button>
           </form>

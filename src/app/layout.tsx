@@ -1,5 +1,18 @@
 import type { Metadata } from "next";
+import { Cormorant_Garamond, Montserrat } from "next/font/google";
 import "./globals.css";
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-cormorant",
+});
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-montserrat",
+});
 
 export const metadata: Metadata = {
   title: "Terra Araras",
@@ -12,8 +25,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es">
-      <body className="bg-terra-sand text-terra-dark antialiased">{children}</body>
+    <html lang="es" className={`${cormorant.variable} ${montserrat.variable}`}>
+      <body className="bg-terra-sand font-sans text-terra-dark antialiased">{children}</body>
     </html>
   );
 }

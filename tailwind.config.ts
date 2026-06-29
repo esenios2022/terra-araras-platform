@@ -6,11 +6,16 @@ const config: Config = {
     extend: {
       colors: {
         terra: {
-          DEFAULT: "#6B4226",
-          dark: "#3E2723",
-          sand: "#E8D9C5",
-          gold: "#C9A227",
+          DEFAULT: "#2FA573",
+          dark: "#333333",
+          deep: "#258A5F",
+          sand: "#FAFAF8",
+          gold: "#D4AF37",
         },
+      },
+      fontFamily: {
+        serif: ["var(--font-cormorant)", "Georgia", "serif"],
+        sans: ["var(--font-montserrat)", "ui-sans-serif", "system-ui", "sans-serif"],
       },
     },
   },
