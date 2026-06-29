@@ -10,7 +10,7 @@ export default function TestimonioPage() {
   const [status, setStatus] = useState<"idle" | "loading" | "saved" | "error">("idle");
 
   useEffect(() => {
-    const match = document.cookie.match(/locale=(es|pt)/);
+    const match = document.cookie.match(/locale_v2=(es|pt)/);
     if (match) setLocale(match[1] as Locale);
   }, []);
 

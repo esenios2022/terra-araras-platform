@@ -16,7 +16,7 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const match = document.cookie.match(/locale=(es|pt)/);
+    const match = document.cookie.match(/locale_v2=(es|pt)/);
     if (match) setLocale(match[1] as Locale);
   }, []);
 
