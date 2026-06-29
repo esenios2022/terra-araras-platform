@@ -90,7 +90,7 @@ function LoginForm({ t }: { t: Dictionary }) {
 }
 
 export default function LoginPage() {
-  const [locale, setLocale] = useState<Locale>("es");
+  const [locale, setLocale] = useState<Locale>("pt");
 
   useEffect(() => {
     const match = document.cookie.match(/locale=(es|pt)/);

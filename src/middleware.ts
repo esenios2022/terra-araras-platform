@@ -9,8 +9,9 @@ function detectLocale(request: NextRequest): Locale {
   const cookieLocale = request.cookies.get(LOCALE_COOKIE_NAME)?.value;
   if (cookieLocale === "es" || cookieLocale === "pt") return cookieLocale;
 
+  // Portugués es el idioma por defecto: se esperan más visitantes de Brasil que de Uruguay.
   const acceptLanguage = request.headers.get("accept-language") ?? "";
-  return acceptLanguage.toLowerCase().startsWith("pt") ? "pt" : "es";
+  return acceptLanguage.toLowerCase().startsWith("es") ? "es" : "pt";
 }
 
 function nextWithLocale(request: NextRequest, locale: Locale, hadLocaleCookie: boolean) {

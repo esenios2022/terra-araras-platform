@@ -8,7 +8,7 @@ import type { Locale } from "@/lib/i18n/config";
 
 export default function SignupPage() {
   const router = useRouter();
-  const [locale, setLocale] = useState<Locale>("es");
+  const [locale, setLocale] = useState<Locale>("pt");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");

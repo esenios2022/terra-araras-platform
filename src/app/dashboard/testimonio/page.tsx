@@ -5,7 +5,7 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
 
 export default function TestimonioPage() {
-  const [locale, setLocale] = useState<Locale>("es");
+  const [locale, setLocale] = useState<Locale>("pt");
   const [content, setContent] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "saved" | "error">("idle");
 
