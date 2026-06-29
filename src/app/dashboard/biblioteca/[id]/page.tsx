@@ -1,5 +1,4 @@
-import { notFound, redirect } from "next/navigation";
-import { getSession } from "@/lib/auth/session";
+import { notFound } from "next/navigation";
 import { sql } from "@/lib/db";
 import type { ContentItem } from "@/lib/types";
 import VideoPlayer from "@/components/VideoPlayer";
@@ -10,23 +9,14 @@ import { localizedContent } from "@/lib/i18n/content";
 
 export const dynamic = "force-dynamic";
 
-export default async function ContentDetailPage({
+export default async function BibliotecaItemPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await getSession();
-  if (!session) redirect("/login");
-
   const locale = await getLocale();
   const t = getDictionary(locale);
-
-  const [user] = await sql`
-    select role, subscription_status from users where id = ${session.userId}
-  `;
-  const hasAccess = user?.role === "admin" || user?.subscription_status === "active";
-  if (!hasAccess) redirect("/dashboard");
 
   const [item] = (await sql`
     select * from content_items where id = ${id} and is_published = true

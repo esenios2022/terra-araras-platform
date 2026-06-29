@@ -24,11 +24,8 @@ export default async function DashboardLayout({
           <Logo className="text-terra-dark" />
         </Link>
         <nav className="flex items-center gap-4 text-sm">
-          <Link href="/dashboard" className="hover:underline">
+          <Link href="/dashboard/biblioteca" className="hover:underline">
             {t.nav.library}
-          </Link>
-          <Link href="/dashboard/intake" className="hover:underline">
-            {t.nav.talkToAgent}
           </Link>
           <Link href="/dashboard/testimonio" className="hover:underline">
             {t.nav.leaveTestimonial}

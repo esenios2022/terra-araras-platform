@@ -7,7 +7,6 @@ export const dictionaries = {
       login: "Iniciar sesión",
       signup: "Crear cuenta",
       library: "Biblioteca",
-      talkToAgent: "Hablar con el agente",
       leaveTestimonial: "Dejar testimonio",
       admin: "Admin",
       logout: "Salir",
@@ -94,6 +93,7 @@ export const dictionaries = {
       videos: "Videos",
       audios: "Audios",
       emptyContent: "Todavía no hay contenido acá.",
+      selectFromMenu: "Elegí un video o audio del menú para empezar.",
     },
     intake: {
       greeting: "Hola, bienvenida/o a Terra Araras. ¿Qué te trae hoy hasta acá?",
@@ -101,6 +101,13 @@ export const dictionaries = {
       send: "Enviar",
       typing: "Escribiendo...",
       error: "Tuvimos un problema técnico. ¿Podés intentar de nuevo?",
+      quickReplies: [
+        "Quiero contarte cómo me siento",
+        "Busco algo para la ansiedad",
+        "Necesito limpiar mi energía",
+        "Todavía no sé, ayudame a encontrar algo",
+      ],
+      goToLibrary: "Ir a la biblioteca →",
     },
     testimonialForm: {
       title: "Dejá tu testimonio",
@@ -137,7 +144,6 @@ export const dictionaries = {
       login: "Entrar",
       signup: "Criar conta",
       library: "Biblioteca",
-      talkToAgent: "Falar com o agente",
       leaveTestimonial: "Deixar depoimento",
       admin: "Admin",
       logout: "Sair",
@@ -224,6 +230,7 @@ export const dictionaries = {
       videos: "Vídeos",
       audios: "Áudios",
       emptyContent: "Ainda não há conteúdo aqui.",
+      selectFromMenu: "Escolha um vídeo ou áudio no menu para começar.",
     },
     intake: {
       greeting: "Olá, seja bem-vindo(a) à Terra Araras. O que te traz até aqui hoje?",
@@ -231,6 +238,13 @@ export const dictionaries = {
       send: "Enviar",
       typing: "Escrevendo...",
       error: "Tivemos um problema técnico. Você pode tentar de novo?",
+      quickReplies: [
+        "Quero te contar como estou me sentindo",
+        "Procuro algo para ansiedade",
+        "Preciso limpar minha energia",
+        "Ainda não sei, me ajude a encontrar algo",
+      ],
+      goToLibrary: "Ir para a biblioteca →",
     },
     testimonialForm: {
       title: "Deixe seu depoimento",
