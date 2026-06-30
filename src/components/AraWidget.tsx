@@ -2,16 +2,17 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import type { IntakeMessage } from "@/lib/types";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
-import AraFlyer from "@/components/AraFlyer";
 
+// Vuela solo por la franja derecha para no tapar el contenido central
 function randomSpot() {
   return {
-    top: 8 + Math.random() * 68, // vh, keeps clear of footer
-    left: 2 + Math.random() * 24, // vw — solo el lado izquierdo, lejos de los dialogos
+    top: 10 + Math.random() * 65,
+    left: 72 + Math.random() * 16, // 72–88 vw
   };
 }
 
@@ -96,8 +97,9 @@ export default function AraWidget({ locale }: { locale: Locale }) {
 
           {view === "menu" ? (
             <div className="flex flex-1 flex-col items-center overflow-y-auto px-5 pb-5">
-              <AraFlyer className="mt-2 h-28 w-48 rounded-3xl border-2 border-terra/40" />
-
+              <div className="relative mt-2 h-28 w-52 overflow-hidden rounded-2xl">
+                <Image src="/ara.png" alt="Ara" fill className="object-cover object-center" />
+              </div>
               <div className="mt-5 w-full space-y-2">
                 {t.intake.quickReplies.map((reply) => (
                   <button
@@ -174,9 +176,11 @@ export default function AraWidget({ locale }: { locale: Locale }) {
                 transition: "top 3.5s ease-in-out, left 3.5s ease-in-out",
               }
         }
-        className={`fixed z-50 drop-shadow-xl ${isOpen ? "bottom-5 left-5" : ""}`}
+        className={`fixed z-50 ${isOpen ? "bottom-6 right-6" : ""}`}
       >
-        <AraFlyer className="h-16 w-28 animate-ara-float rounded-full" />
+        <div className="relative h-24 w-48 animate-ara-float drop-shadow-2xl">
+          <Image src="/ara.png" alt="Ara" fill className="object-contain" />
+        </div>
       </button>
     </>
   );
