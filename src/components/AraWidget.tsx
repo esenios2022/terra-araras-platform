@@ -97,8 +97,8 @@ export default function AraWidget({ locale }: { locale: Locale }) {
 
           {view === "menu" ? (
             <div className="flex flex-1 flex-col items-center overflow-y-auto px-5 pb-5">
-              <div className="relative mt-2 h-28 w-52 overflow-hidden rounded-2xl">
-                <Image src="/ara.png" alt="Ara" fill className="object-cover object-center" />
+              <div className="relative mt-2 h-28 w-52">
+                <Image src="/ara.png" alt="Ara" fill className="object-contain" />
               </div>
               <div className="mt-5 w-full space-y-2">
                 {t.intake.quickReplies.map((reply) => (
@@ -178,8 +178,8 @@ export default function AraWidget({ locale }: { locale: Locale }) {
         }
         className={`fixed z-50 ${isOpen ? "bottom-6 right-6" : ""}`}
       >
-        <div className="relative h-24 w-48 animate-ara-float drop-shadow-2xl">
-          <Image src="/ara.png" alt="Ara" fill className="object-contain" />
+        <div className="relative h-28 w-56 animate-ara-float">
+          <Image src="/ara.png" alt="Ara" fill className="object-contain drop-shadow-2xl" />
         </div>
       </button>
     </>
