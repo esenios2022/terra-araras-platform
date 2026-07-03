@@ -1,4 +1,4 @@
-import { put, get } from "@vercel/blob";
+import { put, head } from "@vercel/blob";
 
 const EXTENSION_CONTENT_TYPES: Record<string, string> = {
   mp3: "audio/mpeg",
@@ -19,5 +19,11 @@ export async function uploadAudioFile(pathname: string, body: Buffer, contentTyp
 }
 
 export async function getAudioStream(pathname: string) {
-  return get(pathname, { access: "private" });
+  const meta = await head(pathname);
+  const token = process.env.BLOB_READ_WRITE_TOKEN ?? "";
+  const res = await fetch(meta.url, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) return null;
+  return { stream: res.body, contentType: meta.contentType, size: meta.size };
 }

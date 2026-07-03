@@ -30,13 +30,13 @@ export async function GET(request: NextRequest) {
   }
 
   const result = await getAudioStream(content.audio_path);
-  if (!result || result.statusCode !== 200) {
+  if (!result) {
     return NextResponse.json({ error: "No se pudo cargar el audio" }, { status: 404 });
   }
 
   return new NextResponse(result.stream, {
     headers: {
-      "Content-Type": resolveAudioContentType(content.audio_path, result.blob.contentType),
+      "Content-Type": resolveAudioContentType(content.audio_path, result.contentType),
       "Cache-Control": "private, no-store",
       "Content-Disposition": "inline",
     },
