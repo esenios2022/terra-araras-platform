@@ -11,6 +11,8 @@ create table users (
   role text not null default 'user' check (role in ('user', 'admin')),
   subscription_status text not null default 'inactive'
     check (subscription_status in ('inactive', 'active', 'past_due', 'canceled')),
+  access_status text not null default 'approved'
+    check (access_status in ('pending', 'approved')),
   created_at timestamptz not null default now()
 );
 
@@ -25,6 +27,8 @@ create table content_items (
   duration_minutes int,
   vimeo_id text,
   audio_path text,
+  drive_url text,
+  tier text not null default 'premium' check (tier in ('free', 'premium')),
   thumbnail_url text,
   is_published boolean not null default false,
   sort_order int not null default 0,

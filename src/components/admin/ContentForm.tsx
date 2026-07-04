@@ -17,6 +17,8 @@ export default function ContentForm({ initial }: { initial?: ContentItem }) {
   );
   const [vimeoId, setVimeoId] = useState(initial?.vimeo_id ?? "");
   const [audioFile, setAudioFile] = useState<File | null>(null);
+  const [driveUrl, setDriveUrl] = useState(initial?.drive_url ?? "");
+  const [tier, setTier] = useState<"free" | "premium">(initial?.tier ?? "premium");
   const [isPublished, setIsPublished] = useState(initial?.is_published ?? false);
   const [sortOrder, setSortOrder] = useState(initial?.sort_order?.toString() ?? "0");
   const [saving, setSaving] = useState(false);
@@ -52,6 +54,8 @@ export default function ContentForm({ initial }: { initial?: ContentItem }) {
         duration_minutes: durationMinutes ? Number(durationMinutes) : null,
         vimeo_id: type === "video" ? vimeoId || null : null,
         audio_path: type === "audio" ? audioPath : null,
+        drive_url: type === "audio" ? driveUrl || null : null,
+        tier,
         is_published: isPublished,
         sort_order: Number(sortOrder) || 0,
       };
@@ -176,19 +180,49 @@ export default function ContentForm({ initial }: { initial?: ContentItem }) {
           />
         </div>
       ) : (
-        <div>
-          <label className="block text-sm font-medium text-terra-dark">Archivo de audio</label>
-          <input
-            type="file"
-            accept="audio/*"
-            onChange={(e) => setAudioFile(e.target.files?.[0] ?? null)}
-            className="mt-1 w-full text-sm"
-          />
-          {initial?.audio_path && !audioFile && (
-            <p className="mt-1 text-xs text-terra-dark/50">Ya hay un archivo cargado.</p>
-          )}
+        <div className="space-y-3">
+          <div>
+            <label className="block text-sm font-medium text-terra-dark">
+              Link de Google Drive <span className="text-terra-gold">(recomendado)</span>
+            </label>
+            <input
+              value={driveUrl}
+              onChange={(e) => setDriveUrl(e.target.value)}
+              placeholder="https://drive.google.com/file/d/…/view?usp=sharing"
+              className="mt-1 w-full rounded-lg border border-terra/30 px-3 py-2"
+            />
+            <p className="mt-1 text-xs text-terra-dark/50">
+              Subí el audio a Drive, compartilo como &quot;cualquiera con el link&quot; y pegá el link acá.
+            </p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-terra-dark">
+              O subir archivo directo
+            </label>
+            <input
+              type="file"
+              accept="audio/*"
+              onChange={(e) => setAudioFile(e.target.files?.[0] ?? null)}
+              className="mt-1 w-full text-sm"
+            />
+            {initial?.audio_path && !audioFile && !driveUrl && (
+              <p className="mt-1 text-xs text-terra-dark/50">Ya hay un archivo cargado.</p>
+            )}
+          </div>
         </div>
       )}
+
+      <div>
+        <label className="block text-sm font-medium text-terra-dark">Acceso</label>
+        <select
+          value={tier}
+          onChange={(e) => setTier(e.target.value as "free" | "premium")}
+          className="mt-1 w-full rounded-lg border border-terra/30 px-3 py-2"
+        >
+          <option value="free">Gratuito — visible para todos los registrados</option>
+          <option value="premium">Premium — solo suscriptores activos</option>
+        </select>
+      </div>
 
       <label className="flex items-center gap-2 text-sm font-medium text-terra-dark">
         <input

@@ -21,13 +21,20 @@ export default async function BibliotecaLayout({
   const t = getDictionary(locale);
 
   const [user] = await sql`
-    select role, subscription_status from users where id = ${session.userId}
+    select role, subscription_status, access_status from users where id = ${session.userId}
   `;
-  const hasAccess = user?.role === "admin" || user?.subscription_status === "active";
-  if (!hasAccess) redirect("/dashboard");
+  const isAdmin = user?.role === "admin";
+  const isApproved = isAdmin || user?.access_status === "approved";
+  const isPremium = isAdmin || user?.subscription_status === "active";
 
+  if (!isApproved) redirect("/dashboard");
+
+  // Free content visible to all approved users; premium only for active subscribers
   const items = (await sql`
-    select * from content_items where is_published = true order by sort_order asc
+    select * from content_items
+    where is_published = true
+      and (tier = 'free' or ${isPremium})
+    order by sort_order asc
   `) as ContentItem[];
 
   const videos = items.filter((i) => i.type === "video");

@@ -36,7 +36,7 @@ export default async function BibliotecaItemPage({
         {item.type === "video" && item.vimeo_id ? (
           <VideoPlayer vimeoId={item.vimeo_id} />
         ) : item.type === "audio" ? (
-          <AudioPlayer contentId={item.id} />
+          <AudioPlayer contentId={item.id} driveUrl={item.drive_url} />
         ) : (
           <p className="text-sm text-red-700">{t.contentDetail.noFile}</p>
         )}

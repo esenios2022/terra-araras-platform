@@ -32,6 +32,7 @@ export default async function LandingPage() {
         </nav>
       </header>
 
+      {/* Hero */}
       <section className="px-6 py-16 text-center md:px-16">
         <h1 className="mx-auto max-w-3xl text-4xl font-bold leading-tight md:text-5xl">
           {t.landing.heroTitle}
@@ -47,6 +48,30 @@ export default async function LandingPage() {
         </Link>
       </section>
 
+      {/* Comandos Cuánticos */}
+      <section className="bg-terra-deep px-6 py-16 text-terra-sand md:px-16">
+        <div className="mx-auto max-w-4xl">
+          <p className="text-sm font-semibold uppercase tracking-widest text-terra-gold">
+            {t.landing.quantumLead}
+          </p>
+          <h2 className="mt-3 text-3xl font-bold md:text-4xl">{t.landing.quantumTitle}</h2>
+          <p className="mt-4 max-w-2xl text-lg leading-relaxed text-terra-sand/80">
+            {t.landing.quantumDesc}
+          </p>
+          <div className="mt-10 grid gap-6 md:grid-cols-2">
+            <div className="rounded-2xl bg-white/10 p-6">
+              <h3 className="text-xl font-bold">{t.landing.quantumFreeTitle}</h3>
+              <p className="mt-2 text-terra-sand/80">{t.landing.quantumFreeText}</p>
+            </div>
+            <div className="rounded-2xl bg-terra-gold/20 p-6">
+              <h3 className="text-xl font-bold">{t.landing.quantumPremiumTitle}</h3>
+              <p className="mt-2 text-terra-sand/80">{t.landing.quantumPremiumText}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features */}
       <section className="px-6 py-12 md:px-16">
         <h2 className="text-center text-2xl font-bold text-terra-dark">
           {t.landing.featuresTitle}
@@ -61,6 +86,7 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* Benefits */}
       <section className="grid gap-6 px-6 py-12 md:grid-cols-3 md:px-16">
         {t.landing.benefits.map((b) => (
           <div key={b.title} className="rounded-2xl bg-white/60 p-6 shadow-sm">
@@ -70,6 +96,7 @@ export default async function LandingPage() {
         ))}
       </section>
 
+      {/* Pricing */}
       <section className="px-6 py-16 md:px-16" id="precios">
         <h2 className="text-center text-2xl font-bold text-terra-dark">
           {t.landing.pricingTitle}
@@ -89,6 +116,10 @@ export default async function LandingPage() {
             <p className="text-terra-sand/70">{t.landing.brazilUnit}</p>
           </div>
         </div>
+        <div className="mt-6 text-center">
+          <p className="text-sm font-semibold text-terra-gold">{t.landing.annualDiscountLabel}</p>
+          <p className="mt-1 text-sm text-terra-dark/60">{t.landing.annualDiscountDetail}</p>
+        </div>
         <div className="mt-8 flex flex-col items-center gap-3">
           <Link
             href="/signup"
@@ -97,6 +128,34 @@ export default async function LandingPage() {
             {t.landing.ctaCreateAccount}
           </Link>
           <WhatsAppButton locale={locale} />
+        </div>
+      </section>
+
+      {/* Therapist profile */}
+      <section className="px-6 py-16 md:px-16">
+        <div className="mx-auto max-w-2xl rounded-3xl bg-white/70 p-8 text-center shadow-sm">
+          <p className="text-sm font-semibold uppercase tracking-widest text-terra-gold">
+            {t.landing.therapistLabel}
+          </p>
+          <h2 className="mt-2 text-2xl font-bold text-terra-dark">Claudio Fabián Martínez</h2>
+          <p className="mt-3 text-terra-dark/70">{t.landing.therapistBio}</p>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <a
+              href="https://claudio-martinez-terapeuta.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-full border border-terra-dark/30 px-5 py-2 text-sm font-semibold text-terra-dark hover:bg-terra-dark/5"
+            >
+              {t.landing.therapistProfileLink}
+            </a>
+            <WhatsAppButton locale={locale} />
+            <a
+              href="mailto:esenios2022@gmail.com"
+              className="rounded-full border border-terra-dark/30 px-5 py-2 text-sm font-semibold text-terra-dark hover:bg-terra-dark/5"
+            >
+              {t.landing.therapistEmailLabel}
+            </a>
+          </div>
         </div>
       </section>
 

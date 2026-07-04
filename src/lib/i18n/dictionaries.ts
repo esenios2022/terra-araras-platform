@@ -66,6 +66,23 @@ export const dictionaries = {
       brazilUnit: "reales / mes",
       ctaCreateAccount: "Crear cuenta",
       footerTestimonials: "Ver testimonios",
+      quantumTitle: "¿Qué son los Comandos Cuánticos?",
+      quantumLead: "Metodología basada en la obra del matemático ruso Grigori Grabovoi",
+      quantumDesc:
+        "Los Comandos Cuánticos son secuencias numéricas que actúan sobre el campo cuántico de información del ser humano. Cada número es un código de frecuencia: al concentrarse en él durante una meditación guiada, invita al sistema nervioso y al campo energético a volver a su armonía natural.",
+      quantumFreeTitle: "Sección gratuita",
+      quantumFreeText:
+        "Meditaciones introductorias y principios básicos de los Comandos Cuánticos. Disponible para todos los usuarios aprobados, sin costo adicional.",
+      quantumPremiumTitle: "Activaciones completas",
+      quantumPremiumText:
+        "Toda la biblioteca: secuencias para la ansiedad, el desamor, la abundancia, limpiezas energéticas profundas y procesos de transformación personal.",
+      annualDiscountLabel: "Pagando el año completo obtenés 40% de descuento",
+      annualDiscountDetail: "Uruguay $3.996 / año · Brasil R$ 317 / año",
+      therapistLabel: "Tu guía en esta plataforma",
+      therapistBio:
+        "Terapeuta holístico especializado en Comandos Cuánticos, limpieza energética y constelaciones. Más de 10 años acompañando procesos de transformación personal.",
+      therapistProfileLink: "Ver mi sitio web",
+      therapistEmailLabel: "Escribir por email",
     },
     auth: {
       brand: "Terra Araras",
@@ -203,6 +220,23 @@ export const dictionaries = {
       brazilUnit: "reais / mês",
       ctaCreateAccount: "Criar conta",
       footerTestimonials: "Ver depoimentos",
+      quantumTitle: "O que são os Comandos Quânticos?",
+      quantumLead: "Metodologia baseada na obra do matemático russo Grigori Grabovoi",
+      quantumDesc:
+        "Os Comandos Quânticos são sequências numéricas que atuam no campo quântico de informação do ser humano. Cada número é um código de frequência: ao se concentrar nele durante uma meditação guiada, convida o sistema nervoso e o campo energético a retornar à sua harmonia natural.",
+      quantumFreeTitle: "Seção gratuita",
+      quantumFreeText:
+        "Meditações introdutórias e princípios básicos dos Comandos Quânticos. Disponível para todos os usuários aprovados, sem custo adicional.",
+      quantumPremiumTitle: "Ativações completas",
+      quantumPremiumText:
+        "Toda a biblioteca: sequências para ansiedade, desamor, abundância, limpezas energéticas profundas e processos de transformação pessoal.",
+      annualDiscountLabel: "Pagando o ano completo você ganha 40% de desconto",
+      annualDiscountDetail: "Uruguai $3.996 / ano · Brasil R$ 317 / ano",
+      therapistLabel: "Seu guia nesta plataforma",
+      therapistBio:
+        "Terapeuta holístico especializado em Comandos Quânticos, limpeza energética e constelações. Mais de 10 anos acompanhando processos de transformação pessoal.",
+      therapistProfileLink: "Ver meu site",
+      therapistEmailLabel: "Escrever por e-mail",
     },
     auth: {
       brand: "Terra Araras",

@@ -10,21 +10,21 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   const { id } = await params;
   const body = await request.json();
   const {
-    title,
-    description,
-    title_pt,
-    description_pt,
-    type,
-    category,
-    duration_minutes,
-    vimeo_id,
-    audio_path,
-    is_published,
-    sort_order,
+    title, description, title_pt, description_pt,
+    type, category, duration_minutes,
+    vimeo_id, audio_path, drive_url, tier,
+    is_published, sort_order,
   } = body;
 
   const cleanVimeoId = vimeo_id ? extractVimeoId(vimeo_id) : null;
   const thumbnailUrl = cleanVimeoId ? await fetchVimeoThumbnail(cleanVimeoId) : null;
+
+  const cleanDriveId = drive_url
+    ? (drive_url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/)?.[1] ?? null)
+    : null;
+  const normalizedDriveUrl = cleanDriveId
+    ? `https://drive.google.com/file/d/${cleanDriveId}/preview`
+    : null;
 
   await sql`
     update content_items set
@@ -37,6 +37,8 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       duration_minutes = ${duration_minutes},
       vimeo_id = ${cleanVimeoId},
       audio_path = ${audio_path},
+      drive_url = ${normalizedDriveUrl},
+      tier = ${tier ?? "premium"},
       thumbnail_url = ${thumbnailUrl},
       is_published = ${is_published},
       sort_order = ${sort_order},

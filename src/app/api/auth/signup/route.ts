@@ -23,8 +23,8 @@ export async function POST(request: Request) {
   const passwordHash = await hashPassword(password);
 
   const [user] = await sql`
-    insert into users (email, password_hash, full_name)
-    values (${normalizedEmail}, ${passwordHash}, ${fullName ?? null})
+    insert into users (email, password_hash, full_name, access_status)
+    values (${normalizedEmail}, ${passwordHash}, ${fullName ?? null}, 'pending')
     returning id, email, role
   `;
 

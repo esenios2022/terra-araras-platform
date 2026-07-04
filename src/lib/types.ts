@@ -11,6 +11,8 @@ export interface ContentItem {
   duration_minutes: number | null;
   vimeo_id: string | null;
   audio_path: string | null;
+  drive_url: string | null;
+  tier: "free" | "premium";
   thumbnail_url: string | null;
   is_published: boolean;
   sort_order: number;
@@ -23,6 +25,7 @@ export interface User {
   full_name: string | null;
   role: "user" | "admin";
   subscription_status: "inactive" | "active" | "past_due" | "canceled";
+  access_status: "pending" | "approved";
   created_at: string;
 }
 

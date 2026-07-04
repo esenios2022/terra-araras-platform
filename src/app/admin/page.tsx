@@ -3,6 +3,7 @@ import { sql } from "@/lib/db";
 import type { ContentItem, Testimonial, User } from "@/lib/types";
 import DeleteContentButton from "@/components/admin/DeleteContentButton";
 import TestimonialActions from "@/components/admin/TestimonialActions";
+import ApproveUserButton from "@/components/admin/ApproveUserButton";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,7 @@ export default async function AdminPage() {
   `) as (Testimonial & { email: string })[];
 
   const activeCount = subscribers.filter((s) => s.subscription_status === "active").length;
+  const pendingCount = subscribers.filter((s) => s.access_status === "pending").length;
 
   return (
     <div className="space-y-10">
@@ -82,7 +84,8 @@ export default async function AdminPage() {
 
       <section>
         <h2 className="text-xl font-bold text-terra-dark">
-          Suscriptores ({activeCount} activos de {subscribers.length})
+          Usuarios ({pendingCount > 0 && <span className="text-terra-gold">{pendingCount} pendientes · </span>}
+          {activeCount} activos de {subscribers.length})
         </h2>
         <div className="mt-4 overflow-hidden rounded-2xl bg-white/70">
           <table className="w-full text-left text-sm">
@@ -90,17 +93,30 @@ export default async function AdminPage() {
               <tr>
                 <th className="px-4 py-2">Nombre</th>
                 <th className="px-4 py-2">Email</th>
-                <th className="px-4 py-2">Estado</th>
-                <th className="px-4 py-2">Rol</th>
+                <th className="px-4 py-2">Suscripción</th>
+                <th className="px-4 py-2">Acceso</th>
+                <th className="px-4 py-2"></th>
               </tr>
             </thead>
             <tbody>
               {subscribers.map((s) => (
-                <tr key={s.id} className="border-t border-terra/10">
+                <tr
+                  key={s.id}
+                  className={`border-t border-terra/10 ${s.access_status === "pending" ? "bg-terra-gold/5" : ""}`}
+                >
                   <td className="px-4 py-2">{s.full_name ?? "—"}</td>
                   <td className="px-4 py-2">{s.email}</td>
                   <td className="px-4 py-2">{s.subscription_status}</td>
-                  <td className="px-4 py-2">{s.role}</td>
+                  <td className="px-4 py-2">
+                    <span className={`font-medium ${s.access_status === "pending" ? "text-terra-gold" : "text-green-700"}`}>
+                      {s.access_status === "pending" ? "Pendiente" : "Aprobado"}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2">
+                    {s.role !== "admin" && (
+                      <ApproveUserButton userId={s.id} currentStatus={s.access_status ?? "pending"} />
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
