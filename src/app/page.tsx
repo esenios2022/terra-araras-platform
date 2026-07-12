@@ -131,6 +131,34 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* eAlumina therapists — free access */}
+      <section className="bg-terra/10 px-6 py-12 md:px-16">
+        <div className="mx-auto max-w-3xl rounded-3xl bg-white/80 p-8 text-center shadow-sm">
+          <p className="text-sm font-semibold uppercase tracking-widest text-terra-gold">
+            {locale === "pt" ? "Para terapeutas eAlumina" : "Para terapeutas de eAlumina"}
+          </p>
+          <h2 className="mt-2 text-2xl font-bold text-terra-dark">
+            {locale === "pt"
+              ? "Acesso gratuito para terapeutas cadastrados"
+              : "Acceso gratuito para terapeutas registrados"}
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl text-terra-dark/70">
+            {locale === "pt"
+              ? "Se você é terapeuta cadastrado na plataforma eAlumina, o acesso ao Terra Araras é gratuito. Entre em contato para ativar seu acesso."
+              : "Si sos terapeuta registrado en la plataforma eAlumina, el acceso a Terra Araras es gratuito. Contactanos para activar tu acceso."}
+          </p>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <WhatsAppButton locale={locale} />
+            <a
+              href="mailto:esenios2022@gmail.com"
+              className="rounded-full border border-terra-dark/30 px-5 py-2 text-sm font-semibold text-terra-dark hover:bg-terra-dark/5"
+            >
+              Email
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* Therapist profile */}
       <section className="px-6 py-16 md:px-16">
         <div className="mx-auto max-w-2xl rounded-3xl bg-white/70 p-8 text-center shadow-sm">

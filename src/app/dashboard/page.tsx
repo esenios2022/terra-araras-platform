@@ -40,6 +40,31 @@ export default async function DashboardPage() {
     );
   }
 
+  const pt = locale === "pt";
+
+  // Mahatma 441 promo card — shown to all approved users
+  const mahatmaCard = (
+    <div className="overflow-hidden rounded-2xl bg-terra-deep text-terra-sand">
+      <div className="p-6">
+        <p className="text-xs font-semibold uppercase tracking-widest text-terra-gold">
+          {pt ? "Programa separado · pagamento único" : "Programa separado · pago único"}
+        </p>
+        <h2 className="mt-1 text-xl font-bold">Frecuencia Mahatma 441</h2>
+        <p className="mt-2 text-sm text-terra-sand/80">
+          {pt
+            ? "41 aulas de ativação, reprogramação e meditação quântica. Acesso vitalício por R$ 2.222."
+            : "41 aulas de activación, reprogramación y meditación cuántica. Acceso de por vida por R$ 2.222."}
+        </p>
+        <Link
+          href="/dashboard/mahatma"
+          className="mt-4 inline-block rounded-full bg-terra-gold px-5 py-2 text-sm font-semibold text-terra-dark hover:opacity-90"
+        >
+          {pt ? "Ver programa →" : "Ver programa →"}
+        </Link>
+      </div>
+    </div>
+  );
+
   // Approved but no active subscription
   if (!isPremium) {
     return (
@@ -47,7 +72,7 @@ export default async function DashboardPage() {
         <div className="rounded-2xl bg-white/70 p-8 text-center">
           <h1 className="text-2xl font-bold text-terra-dark">{t.dashboard.welcomeTitle}</h1>
           <p className="mt-2 text-terra-dark/70">
-            {locale === "pt"
+            {pt
               ? "Você tem acesso ao conteúdo gratuito. Para acessar as ativações e meditações completas, ative sua assinatura."
               : "Tenés acceso al contenido gratuito. Para acceder a las activaciones y meditaciones completas, activá tu suscripción."}
           </p>
@@ -66,20 +91,24 @@ export default async function DashboardPage() {
             <WhatsAppButton locale={locale} />
           </div>
         </div>
+        {mahatmaCard}
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-md py-24 text-center">
-      <h1 className="text-2xl font-bold text-terra-dark">{t.dashboard.welcomeTitle}</h1>
-      <p className="mt-3 text-terra-dark/70">{t.dashboard.welcomeText}</p>
-      <Link
-        href="/dashboard/biblioteca"
-        className="mt-6 inline-block rounded-full bg-terra px-6 py-2 font-semibold text-terra-sand hover:bg-terra-deep"
-      >
-        {t.nav.library}
-      </Link>
+    <div className="mx-auto max-w-lg space-y-6 py-8">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-terra-dark">{t.dashboard.welcomeTitle}</h1>
+        <p className="mt-3 text-terra-dark/70">{t.dashboard.welcomeText}</p>
+        <Link
+          href="/dashboard/biblioteca"
+          className="mt-6 inline-block rounded-full bg-terra px-6 py-2 font-semibold text-terra-sand hover:bg-terra-deep"
+        >
+          {t.nav.library}
+        </Link>
+      </div>
+      {mahatmaCard}
     </div>
   );
 }

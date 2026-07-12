@@ -27,6 +27,9 @@ export default async function DashboardLayout({
           <Link href="/dashboard/biblioteca" className="hover:underline">
             {t.nav.library}
           </Link>
+          <Link href="/dashboard/mahatma" className="font-semibold text-terra-gold hover:underline">
+            Mahatma 441
+          </Link>
           <Link href="/dashboard/testimonio" className="hover:underline">
             {t.nav.leaveTestimonial}
           </Link>
