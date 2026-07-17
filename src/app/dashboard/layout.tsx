@@ -5,6 +5,7 @@ import { getLocale } from "@/lib/i18n/get-locale";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import LanguageToggle from "@/components/LanguageToggle";
 import Logo from "@/components/Logo";
+import AraWidget from "@/components/AraWidget";
 
 export default async function DashboardLayout({
   children,
@@ -47,6 +48,7 @@ export default async function DashboardLayout({
         </nav>
       </header>
       <main className="px-6 py-8 md:px-12">{children}</main>
+      <AraWidget locale={locale} />
     </div>
   );
 }

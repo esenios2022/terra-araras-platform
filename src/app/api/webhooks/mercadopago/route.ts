@@ -1,6 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getMpPreApproval } from "@/lib/mercadopago";
 import { sql } from "@/lib/db";
+import crypto from "crypto";
+
+function verifySignature(req: NextRequest, dataId: string | null): boolean {
+  const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
+  if (!secret) return true; // sin secret configurado, dejar pasar (modo legacy)
+
+  const signature = req.headers.get("x-signature");
+  const requestId = req.headers.get("x-request-id");
+  if (!signature) return false;
+
+  const parts = Object.fromEntries(
+    signature.split(",").map((part) => {
+      const [k, ...v] = part.split("=");
+      return [k, v.join("=")];
+    })
+  );
+  const ts = parts["ts"];
+  const v1 = parts["v1"];
+  if (!ts || !v1) return false;
+
+  const template = `id:${dataId};request-id:${requestId};ts:${ts}`;
+  const expected = crypto.createHmac("sha256", secret).update(template).digest("hex");
+
+  try {
+    return crypto.timingSafeEqual(Buffer.from(v1, "hex"), Buffer.from(expected, "hex"));
+  } catch {
+    return false;
+  }
+}
 
 function mapStatus(status: string): string {
   if (status === "authorized") return "active";
@@ -15,6 +44,10 @@ export async function POST(request: NextRequest) {
 
   if (type !== "subscription_preapproval" || !preapprovalId) {
     return NextResponse.json({ received: true });
+  }
+
+  if (!verifySignature(request, preapprovalId)) {
+    return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
   const preapproval = await getMpPreApproval().get({ id: preapprovalId });

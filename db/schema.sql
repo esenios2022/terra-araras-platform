@@ -11,7 +11,7 @@ create table users (
   role text not null default 'user' check (role in ('user', 'admin')),
   subscription_status text not null default 'inactive'
     check (subscription_status in ('inactive', 'active', 'past_due', 'canceled')),
-  access_status text not null default 'approved'
+  access_status text not null default 'pending'
     check (access_status in ('pending', 'approved')),
   created_at timestamptz not null default now()
 );
